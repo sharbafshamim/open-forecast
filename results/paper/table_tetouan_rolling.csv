@@ -1,0 +1,12 @@
+model,feature_mode,windows,mean_rmse,mean_rank,wins
+extra_trees,weather_time_history_weekly,11,1896.42,3.55,2
+random_forest,weather_time_history_weekly,11,1877.31,3.73,1
+seasonal_naive,weather_time_history,11,1906.87,4.45,4
+hist_gradient_boosting,weather_time_history_weekly,11,1922.05,4.55,0
+extra_trees,weather_time_history,11,1960.63,4.82,0
+random_forest,weather_time_history,11,1951.06,5.0,0
+persistence,weather_time_history,11,1890.18,5.18,2
+hist_gradient_boosting,weather_time_history,11,1999.84,5.18,2
+extra_trees,weather_time,11,3657.06,9.27,0
+hist_gradient_boosting,weather_time,11,3705.65,9.64,0
+random_forest,weather_time,11,3769.96,10.64,0

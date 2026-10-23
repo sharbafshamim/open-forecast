@@ -1,0 +1,18 @@
+# EPF benchmark market FR (Lago et al. 2021) -- PRICE-ONLY public mirror.
+# For the paper, replace with the official epftoolbox file (adds the two
+# day-ahead exogenous forecasts):  see configs/epf_fr.yaml
+dataset:
+  format: long_price
+  path: data/raw/epf/nixtla_electricity_mirror.csv
+  series: FR
+test:
+  start: "2015-01-04"
+  end: "2016-12-31"
+calibration_days: 1456     # 4-year rolling window, as LEAR(1456) in epftoolbox
+recalibration_days:        # days between refits (LEAR weekly; trees every 4 weeks)
+  lear: 7
+  default: 28
+seed: 42
+models:
+  hgb: {max_iter: 300, learning_rate: 0.05, max_leaf_nodes: 31}
+  et: {n_estimators: 300, min_samples_leaf: 5, max_features: 0.33}

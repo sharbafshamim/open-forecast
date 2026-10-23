@@ -1,0 +1,194 @@
+{
+  "framework": "open-forecast-framework",
+  "models": [
+    "extra_trees"
+  ],
+  "feature_modes": [
+    "weather_time",
+    "weather_time_history",
+    "weather_time_history_weekly"
+  ],
+  "datetime_audit": {
+    "formats_used": {
+      "ME:true_clock_days": 4,
+      "ME:legacy_spring_rows_dropped": 1,
+      "ME:legacy_fall_hours_interpolated": 1,
+      "NH:true_clock_days": 4,
+      "NH:legacy_spring_rows_dropped": 1,
+      "NH:legacy_fall_hours_interpolated": 1,
+      "VT:true_clock_days": 4,
+      "VT:legacy_spring_rows_dropped": 1,
+      "VT:legacy_fall_hours_interpolated": 1,
+      "CT:true_clock_days": 4,
+      "CT:legacy_spring_rows_dropped": 1,
+      "CT:legacy_fall_hours_interpolated": 1,
+      "RI:true_clock_days": 4,
+      "RI:legacy_spring_rows_dropped": 1,
+      "RI:legacy_fall_hours_interpolated": 1,
+      "SEMA:true_clock_days": 4,
+      "SEMA:legacy_spring_rows_dropped": 1,
+      "SEMA:legacy_fall_hours_interpolated": 1,
+      "WCMA:true_clock_days": 4,
+      "WCMA:legacy_spring_rows_dropped": 1,
+      "WCMA:legacy_fall_hours_interpolated": 1,
+      "NEMA:true_clock_days": 4,
+      "NEMA:legacy_spring_rows_dropped": 1,
+      "NEMA:legacy_fall_hours_interpolated": 1,
+      "cells_interpolated": 24
+    },
+    "first_timestamp": "2023-01-01 00:00:00",
+    "last_timestamp": "2025-12-31 23:00:00",
+    "source_interval": "1:00:00",
+    "source_rows_per_hour": 1,
+    "hourly_rows": 26304,
+    "renamed_columns": {
+      "RT_Demand": "<zone>",
+      "Dry_Bulb": "<zone>_Dry_Bulb",
+      "Dew_Point": "<zone>_Dew_Point"
+    }
+  },
+  "split": {
+    "horizon_hours": 24,
+    "purge_embargo_hours": 24,
+    "train_forecast_origins": 13056,
+    "validation_forecast_origins": 4328,
+    "test_forecast_origins": 8680,
+    "validation_embargoed_origins": 24,
+    "test_embargoed_origins": 24,
+    "train_forecast_origin_end": "2024-07-04 23:00:00",
+    "validation_forecast_origin_start": "2024-07-06 00:00:00",
+    "validation_forecast_origin_end": "2025-01-02 07:00:00",
+    "test_forecast_origin_start": "2025-01-03 08:00:00",
+    "test_forecast_origin_end": "2025-12-30 23:00:00",
+    "train_target_end": "2024-07-05 23:00:00",
+    "validation_target_end": "2025-01-03 07:00:00",
+    "test_target_end": "2025-12-31 23:00:00"
+  },
+  "feature_availability": {
+    "weather_time": "target-time weather proxy + known calendar",
+    "weather_time_history": "weather_time + historical consumption",
+    "weather_time_history_weekly": "weather_time_history + target-aligned weekly lags"
+  },
+  "config": {
+    "dataset": {
+      "format": "isone_smd",
+      "paths": [
+        "data/raw/isone/2023_smd_hourly.xlsx",
+        "data/raw/isone/2024_smd_hourly.xlsx",
+        "data/raw/isone/2025_smd_hourly.xlsx"
+      ],
+      "target_columns": [
+        "ME",
+        "NH",
+        "VT",
+        "CT",
+        "RI",
+        "SEMA",
+        "WCMA",
+        "NEMA"
+      ],
+      "weather_columns": [
+        "ME_Dry_Bulb",
+        "ME_Dew_Point",
+        "NH_Dry_Bulb",
+        "NH_Dew_Point",
+        "VT_Dry_Bulb",
+        "VT_Dew_Point",
+        "CT_Dry_Bulb",
+        "CT_Dew_Point",
+        "RI_Dry_Bulb",
+        "RI_Dew_Point",
+        "SEMA_Dry_Bulb",
+        "SEMA_Dew_Point",
+        "WCMA_Dry_Bulb",
+        "WCMA_Dew_Point",
+        "NEMA_Dry_Bulb",
+        "NEMA_Dew_Point"
+      ]
+    },
+    "forecast": {
+      "horizon_hours": 24,
+      "lookback_hours": 24
+    },
+    "split": {
+      "train_fraction": 0.5,
+      "validation_fraction": 0.1667
+    },
+    "features": {
+      "tree_lags": [
+        1,
+        2,
+        3,
+        6,
+        12,
+        24
+      ],
+      "rolling_windows": [
+        3,
+        24
+      ],
+      "target_weather_proxy": "observed_target_weather",
+      "weekly_lags": [
+        144,
+        168
+      ]
+    },
+    "training": {
+      "seed": 42,
+      "batch_size": 64,
+      "epochs": 60,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "early_stopping_patience": 10
+    },
+    "models": {
+      "random_forest": {
+        "n_estimators": 200,
+        "max_depth": 20
+      },
+      "extra_trees": {
+        "n_estimators": 200,
+        "max_depth": 20
+      },
+      "hist_gradient_boosting": {
+        "max_iter": 200,
+        "max_depth": 10,
+        "learning_rate": 0.05
+      },
+      "lstm": {
+        "hidden_size": 128,
+        "num_layers": 2,
+        "dropout": 0.1
+      },
+      "cross_attention_transformer": {
+        "d_model": 64,
+        "nhead": 4,
+        "num_layers": 2,
+        "dropout": 0.1
+      },
+      "patchtst": {
+        "d_model": 64,
+        "nhead": 4,
+        "num_layers": 2,
+        "patch_length": 4,
+        "stride": 2,
+        "dropout": 0.1
+      }
+    }
+  },
+  "provenance": {
+    "git_revision": "unavailable (repository not initialized or committed)",
+    "source_tree_sha256": "e91becddfc1b0f5752e7f0d384e5ae9d8082a0cb5bdc34897b2cfb61043bc6ed",
+    "raw_data_sha256": {
+      "2023_smd_hourly.xlsx": "db787a1a40c6c39e7d8faa7dd97e696a431a890329dfe2e54bbc262e98fd0b68",
+      "2024_smd_hourly.xlsx": "977d967792c0d50d0207e44ca27b74c787195d465ef53e3cc885c67b37be5f92",
+      "2025_smd_hourly.xlsx": "9cca0df5e35faa6b51ec1510adbdee2df9887bc884a2e93ee462ab77e5ae4445"
+    },
+    "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]",
+    "platform": "Linux-6.18.44-fc-v42-x86_64-with-glibc2.39",
+    "numpy": "2.4.4",
+    "pandas": "3.0.2",
+    "scikit_learn": "1.8.0",
+    "torch": "2.14.0+cu130"
+  }
+}

@@ -1,0 +1,15 @@
+# EPF benchmark market NP (Lago et al. 2021) -- official epftoolbox file (price + 2 day-ahead forecasts).
+dataset:
+  format: epftoolbox
+  path: data/raw/epf/NP.csv
+test:
+  start: "2016-12-27"
+  end: "2018-12-24"
+calibration_days: 1456     # 4-year rolling window, as LEAR(1456) in epftoolbox
+recalibration_days:        # days between refits (LEAR weekly; trees every 4 weeks)
+  lear: 7
+  default: 28
+seed: 42
+models:
+  hgb: {max_iter: 300, learning_rate: 0.05, max_leaf_nodes: 31}
+  et: {n_estimators: 300, min_samples_leaf: 5, max_features: 0.33}

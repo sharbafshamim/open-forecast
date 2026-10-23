@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "open-forecast"
+version = "0.3.0"
+description = "Leakage-audited benchmark for day-ahead electricity load and price forecasting: trees, deep models and zero-shot foundation models under declared information sets"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "scipy",
+    "matplotlib",
+    "PyYAML",
+    "openpyxl",
+]
+
+[project.optional-dependencies]
+deep = ["torch"]                                   # LSTM, Cross-Attention Transformer, PatchTST
+foundation = ["torch", "chronos-forecasting>=2.2"] # Chronos-Bolt, Chronos-2 (zero-shot)
+dev = ["pytest"]
+all = ["torch", "chronos-forecasting>=2.2", "pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

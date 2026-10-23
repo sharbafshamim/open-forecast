@@ -1,0 +1,18 @@
+# ISO-NE system day-ahead LMP, test year 2025, expanding calibration window.
+dataset:
+  format: isone_price
+  paths:
+  - data/raw/isone/2023_smd_hourly.xlsx
+  - data/raw/isone/2024_smd_hourly.xlsx
+  - data/raw/isone/2025_smd_hourly.xlsx
+test:
+  start: "2025-01-01"
+  end: "2025-12-31"
+calibration_days: null        # expanding window (only ~2 years of history)
+recalibration_days:        # days between refits (LEAR weekly; trees every 4 weeks)
+  lear: 7
+  default: 28
+seed: 42
+models:
+  hgb: {max_iter: 300, learning_rate: 0.05, max_leaf_nodes: 31}
+  et: {n_estimators: 300, min_samples_leaf: 5, max_features: 0.33}

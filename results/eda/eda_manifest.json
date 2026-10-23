@@ -1,0 +1,8 @@
+{
+  "raw_data_sha256": {
+    "2023_smd_hourly.xlsx": "db787a1a40c6c39e7d8faa7dd97e696a431a890329dfe2e54bbc262e98fd0b68",
+    "2024_smd_hourly.xlsx": "977d967792c0d50d0207e44ca27b74c787195d465ef53e3cc885c67b37be5f92",
+    "2025_smd_hourly.xlsx": "9cca0df5e35faa6b51ec1510adbdee2df9887bc884a2e93ee462ab77e5ae4445",
+    "power_consumption.csv": "0184f2e6db6b49dfea007f35fe4f6bab7ec4ad6ed1337e747bb1b439ad6cb764"
+  }
+}

@@ -1,0 +1,10 @@
+dataset,model,A (weather+calendar),B (+history),B+ (+weekly lags)
+ISO-NE,extra_trees,129.9,115.0,117.5
+ISO-NE,hist_gradient_boosting,130.4,102.2,102.8
+ISO-NE,persistence,,208.8,
+ISO-NE,seasonal_naive,,305.1,
+Tetouan,extra_trees,4205.7,2621.1,2276.8
+Tetouan,hist_gradient_boosting,4176.2,2471.7,1901.2
+Tetouan,persistence,,1584.5,
+Tetouan,random_forest,4228.7,2290.6,1866.5
+Tetouan,seasonal_naive,,1215.8,

@@ -1,0 +1,69 @@
+# set the experiment configuration
+dataset:
+  unit: dataset units   # the UCI source (DOI 10.24432/C5B034) states no unit; never relabel as W or kW
+  path: data/raw/power_consumption.csv
+  datetime_column: DateTime
+  # Column names are normalized on load (whitespace collapsed, a trailing
+  # "Power Consumption" suffix stripped), so the *original* source columns
+  # "Zone 1 Power Consumption" / "Zone 2  Power Consumption" work with the
+  # plain names below -- no manual renaming needed.
+  # Default retains the original paper's controlled two-zone focus.
+  # A separate three-zone extension can be created by adding Zone 3 here.
+  target_columns: ["Zone 1", "Zone 2"]
+  weather_columns:
+    - Temperature
+    - Humidity
+    - Wind Speed
+    - general diffuse flows
+    - diffuse flows
+
+forecast:
+  horizon_hours: 24
+  lookback_hours: 24
+
+split:
+  train_fraction: 0.70
+  validation_fraction: 0.15
+
+features:
+  tree_lags: [1, 2, 3, 6, 12, 24]
+  rolling_windows: [3, 24]
+  # Observed weather at the target timestamp is used as a weather-forecast
+  # proxy for comparability with the original paper. Replace in deployment.
+  target_weather_proxy: observed_target_weather
+
+training:
+  seed: 42
+  batch_size: 64
+  epochs: 60
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  early_stopping_patience: 10
+
+models:
+  random_forest:
+    n_estimators: 200
+    max_depth: 20
+  extra_trees:
+    n_estimators: 200
+    max_depth: 20
+  hist_gradient_boosting:
+    max_iter: 200
+    max_depth: 10
+    learning_rate: 0.05
+  lstm:
+    hidden_size: 128
+    num_layers: 2
+    dropout: 0.10
+  cross_attention_transformer:
+    d_model: 64
+    nhead: 4
+    num_layers: 2
+    dropout: 0.10
+  patchtst:
+    d_model: 64
+    nhead: 4
+    num_layers: 2
+    patch_length: 4
+    stride: 2
+    dropout: 0.10

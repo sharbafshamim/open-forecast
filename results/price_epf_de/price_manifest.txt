@@ -1,0 +1,8 @@
+dataset: {'format': 'epftoolbox', 'path': 'data/raw/epf/DE.csv'}
+test: {'start': '2016-01-04', 'end': '2017-12-31'}
+calibration_days: 1456
+recalibration_days: {'lear': 7, 'default': 28}
+seed: 42
+models: {'hgb': {'max_iter': 300, 'learning_rate': 0.05, 'max_leaf_nodes': 31}, 'et': {'n_estimators': 300, 'min_samples_leaf': 5, 'max_features': 0.33}}
+exogenous: {'Exogenous 1': 'published day-ahead forecast (Ampirion Load Forecast)', 'Exogenous 2': 'published day-ahead forecast (PV+Wind Forecast)'}
+common test days: 728

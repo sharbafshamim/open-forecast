@@ -1,8 +1,0 @@
-model,information_set,DE (PRICE-ONLY MIRROR),ISONE,NP (PRICE-ONLY MIRROR)
-extra_trees,price_exogenous,,0.681,
-extra_trees,price_only,0.696,0.723,0.776
-hist_gradient_boosting,price_exogenous,,0.666,
-hist_gradient_boosting,price_only,0.706,0.746,0.78
-lear,price_exogenous,,0.615,
-lear,price_only,0.654,0.663,0.708
-naive,-,1.0,1.0,1.0

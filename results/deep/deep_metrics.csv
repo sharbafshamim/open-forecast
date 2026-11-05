@@ -1,0 +1,109 @@
+dataset,model,set,scope,RMSE,MAE,nRMSE_%,MAPE_%
+isone,lstm,A,ME,110.802475,77.5166,8.953474,6.986724
+isone,lstm,A,NH,68.2563,51.48065,5.1688123,3.7829008
+isone,lstm,A,VT,62.95194,45.58468,11.424203,11.310003
+isone,lstm,A,CT,197.34076,145.09073,6.3943954,4.69711
+isone,lstm,A,RI,57.611797,40.296387,6.5653567,4.757532
+isone,lstm,A,SEMA,94.13619,71.241875,5.9055576,4.483686
+isone,lstm,A,WCMA,96.603615,72.608665,5.2965393,3.9539895
+isone,lstm,A,NEMA,117.26157,87.83859,4.3249693,3.1452866
+isone,lstm,A,aggregate,109.03309,73.957275,6.607075,5.3896537
+isone,lstm,B,ME,111.31984,77.42035,8.99528,6.9399476
+isone,lstm,B,NH,59.200165,44.712643,4.483022,3.3224127
+isone,lstm,B,VT,55.94907,39.266735,10.1533575,9.835228
+isone,lstm,B,CT,168.00081,123.265396,5.443698,4.049539
+isone,lstm,B,RI,52.256386,34.65106,5.955062,4.1088204
+isone,lstm,B,SEMA,84.04197,61.881668,5.272305,3.8818028
+isone,lstm,B,WCMA,81.28326,59.964294,4.4565616,3.2846794
+isone,lstm,B,NEMA,99.71941,73.74984,3.6779602,2.6636817
+isone,lstm,B,aggregate,95.914055,64.364,5.8121014,4.760764
+isone,lstm,B+,ME,110.30311,75.28593,8.913122,6.8085938
+isone,lstm,B+,NH,55.91886,40.000824,4.234541,2.9374716
+isone,lstm,B+,VT,55.45742,38.46256,10.064136,9.374848
+isone,lstm,B+,CT,163.55128,117.196815,5.2995214,3.8407695
+isone,lstm,B+,RI,52.809875,35.04581,6.0181365,4.1923347
+isone,lstm,B+,SEMA,81.73302,59.107136,5.1274548,3.731795
+isone,lstm,B+,WCMA,78.263016,56.18609,4.2909694,3.0736256
+isone,lstm,B+,NEMA,100.46881,72.28446,3.7056003,2.586023
+isone,lstm,B+,aggregate,94.07875,61.696205,5.7008877,4.568183
+isone,cross_attention_transformer,A,ME,129.03079,90.90234,10.426426,8.175791
+isone,cross_attention_transformer,A,NH,78.640526,60.01175,5.9551735,4.411075
+isone,cross_attention_transformer,A,VT,66.33737,45.759113,12.038574,11.496028
+isone,cross_attention_transformer,A,CT,218.00833,162.91316,7.0640826,5.293308
+isone,cross_attention_transformer,A,RI,64.942345,45.608845,7.400735,5.332681
+isone,cross_attention_transformer,A,SEMA,116.913795,86.14803,7.3344927,5.394442
+isone,cross_attention_transformer,A,WCMA,112.097305,85.39698,6.1460204,4.600374
+isone,cross_attention_transformer,A,NEMA,143.28116,107.84395,5.284652,3.8358064
+isone,cross_attention_transformer,A,aggregate,125.37105,85.57302,7.597106,6.0674386
+isone,cross_attention_transformer,B,ME,121.401955,82.90881,9.809973,7.489775
+isone,cross_attention_transformer,B,NH,68.72651,49.76338,5.204419,3.6670885
+isone,cross_attention_transformer,B,VT,65.37412,44.577923,11.863769,11.529077
+isone,cross_attention_transformer,B,CT,192.51817,139.67152,6.2381296,4.538153
+isone,cross_attention_transformer,B,RI,58.072506,39.70539,6.617858,4.6785927
+isone,cross_attention_transformer,B,SEMA,99.5008,72.74695,6.242102,4.547352
+isone,cross_attention_transformer,B,WCMA,98.85317,71.36816,5.419877,3.8938246
+isone,cross_attention_transformer,B,NEMA,127.07768,90.59012,4.687018,3.2321892
+isone,cross_attention_transformer,B,aggregate,111.799095,73.916534,6.774687,5.4470067
+isone,cross_attention_transformer,B+,ME,110.72517,76.47075,8.947227,6.8709664
+isone,cross_attention_transformer,B+,NH,66.80132,50.190308,5.0586314,3.7382529
+isone,cross_attention_transformer,B+,VT,62.002438,43.109936,11.251892,10.758916
+isone,cross_attention_transformer,B+,CT,189.88641,134.82817,6.152853,4.3701587
+isone,cross_attention_transformer,B+,RI,58.802784,39.759964,6.7010794,4.669512
+isone,cross_attention_transformer,B+,SEMA,98.7122,71.56901,6.19263,4.4712515
+isone,cross_attention_transformer,B+,WCMA,94.16616,69.59509,5.1629,3.8180747
+isone,cross_attention_transformer,B+,NEMA,127.45464,94.47202,4.700921,3.404925
+isone,cross_attention_transformer,B+,aggregate,108.93659,72.499405,6.6012278,5.2627573
+isone,patchtst,A,ME,137.72554,105.35855,11.129011,9.153504
+isone,patchtst,A,NH,80.76722,59.442547,6.1162205,4.365549
+isone,patchtst,A,VT,125.02232,94.33438,22.688425,24.40265
+isone,patchtst,A,CT,226.72816,156.88089,7.3466296,4.988944
+isone,patchtst,A,RI,77.86237,55.429077,8.873083,6.2703104
+isone,patchtst,A,SEMA,118.26427,85.39077,7.4192133,5.340709
+isone,patchtst,A,WCMA,105.99012,80.72569,5.811178,4.369086
+isone,patchtst,A,NEMA,157.1159,110.46818,5.7949204,3.9036498
+isone,patchtst,A,aggregate,136.24252,93.50376,8.255884,7.849301
+isone,patchtst,B,ME,111.92536,81.74984,9.0442095,7.220161
+isone,patchtst,B,NH,67.91032,49.214115,5.142612,3.6140964
+isone,patchtst,B,VT,64.76038,45.93786,11.752391,11.764862
+isone,patchtst,B,CT,204.60767,147.43454,6.629863,4.796494
+isone,patchtst,B,RI,64.60526,45.508484,7.362322,5.3828588
+isone,patchtst,B,SEMA,105.91232,78.27411,6.644324,5.0065513
+isone,patchtst,B,WCMA,101.8751,79.24821,5.5855618,4.343761
+isone,patchtst,B,NEMA,128.38832,92.784256,4.735358,3.293421
+isone,patchtst,B,aggregate,114.80999,77.51892,6.957138,5.677776
+isone,patchtst,B+,ME,100.615395,75.22903,8.1303,6.5254064
+isone,patchtst,B+,NH,70.228905,50.142002,5.3181906,3.6800032
+isone,patchtst,B+,VT,58.44016,41.549625,10.605428,10.182232
+isone,patchtst,B+,CT,219.41771,149.6691,7.1097507,4.6816354
+isone,patchtst,B+,RI,68.57081,48.44081,7.81423,5.6700525
+isone,patchtst,B+,SEMA,106.58073,77.71469,6.6862555,4.854575
+isone,patchtst,B+,WCMA,105.939064,79.45142,5.808379,4.254831
+isone,patchtst,B+,NEMA,142.99976,97.60428,5.274273,3.417549
+isone,patchtst,B+,aggregate,119.55561,77.47512,7.2447085,5.4082856
+tetouan,lstm,A,Zone 1,2782.026,2176.029,9.57631,7.381556
+tetouan,lstm,A,Zone 2,5522.7896,5149.1885,23.47298,21.935753
+tetouan,lstm,A,aggregate,4372.6924,3662.609,16.632717,14.658655
+tetouan,lstm,B,Zone 1,3809.0552,3492.3752,13.111558,11.801591
+tetouan,lstm,B,Zone 2,3282.927,3039.7239,13.953109,12.73076
+tetouan,lstm,B,aggregate,3555.7356,3266.0496,13.525201,12.266175
+tetouan,lstm,B+,Zone 1,3498.298,3175.419,12.041867,10.688345
+tetouan,lstm,B+,Zone 2,2828.4363,2564.2427,12.021431,10.7558565
+tetouan,lstm,B+,aggregate,3181.0486,2869.8308,12.099977,10.7221
+tetouan,cross_attention_transformer,A,Zone 1,3242.091,2568.2053,11.159949,8.850033
+tetouan,cross_attention_transformer,A,Zone 2,4706.5273,4128.181,20.003702,16.885303
+tetouan,cross_attention_transformer,A,aggregate,4041.1973,3348.1934,15.371785,12.867668
+tetouan,cross_attention_transformer,B,Zone 1,3843.8577,3294.3772,13.231356,10.937594
+tetouan,cross_attention_transformer,B,Zone 2,2681.2573,2309.965,11.395889,9.7282295
+tetouan,cross_attention_transformer,B,aggregate,3313.939,2802.171,12.605462,10.3329115
+tetouan,cross_attention_transformer,B+,Zone 1,4067.0237,3291.3074,13.999538,10.7601
+tetouan,cross_attention_transformer,B+,Zone 2,2365.7979,2059.6304,10.055123,9.066359
+tetouan,cross_attention_transformer,B+,aggregate,3326.9866,2675.4688,12.655092,9.913231
+tetouan,patchtst,A,Zone 1,3265.417,2929.4429,11.240242,10.448467
+tetouan,patchtst,A,Zone 2,4384.4214,3928.351,18.634684,16.211964
+tetouan,patchtst,A,aggregate,3865.624,3428.8967,14.703945,13.330215
+tetouan,patchtst,B,Zone 1,3709.0522,3333.159,12.767326,11.738101
+tetouan,patchtst,B,Zone 2,3731.5303,3248.4016,15.859764,13.279398
+tetouan,patchtst,B,aggregate,3720.308,3290.78,14.1511965,12.50875
+tetouan,patchtst,B+,Zone 1,3060.5044,2643.4604,10.53489,9.137943
+tetouan,patchtst,B+,Zone 2,3994.6125,3649.95,16.977917,15.453932
+tetouan,patchtst,B+,aggregate,3558.3435,3146.7053,13.53512,12.2959385

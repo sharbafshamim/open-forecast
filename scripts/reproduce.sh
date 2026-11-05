@@ -53,4 +53,5 @@ for d in results/*_naive_trees results/*_deep results/*_foundation; do
   [ -f "$d/predictions.csv" ] && python analysis/dm_tests.py "$d/predictions.csv" seasonal_naive || true
 done
 python analysis/summarize.py results
+python analysis/paper_tables.py results   # tables 3-6 and figure 6 of the paper
 python analysis/eda_figures.py --data data/raw --out results/eda

@@ -1,5 +1,0 @@
-,naive,lear|price_only,hist_gradient_boosting|price_only,extra_trees|price_only
-naive,,0.0,0.0,0.0
-lear|price_only,1.0,,0.9999974627494207,0.9998809971194825
-hist_gradient_boosting|price_only,1.0,2.5372505793042066e-06,,0.03202839132330548
-extra_trees|price_only,1.0,0.00011900288051747143,0.9679716086766945,

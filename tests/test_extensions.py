@@ -46,3 +46,30 @@ def test_isone_true_clock_and_legacy_dst_give_continuous_hours(tmp_path):
     assert len(hourly_b) == 25                           # both repeated hours kept
     assert hourly_b.index.is_monotonic_increasing and not hourly_b.index.has_duplicates
     assert hourly_b["ME"].tolist() == [300.0 + i for i in range(25)]
+
+
+def test_weekly_sequences_drop_incomplete_training_samples():
+    """B+ lookback windows at the start of the data reach before the first
+    weekly lag; those samples must be dropped, never passed on as NaN."""
+    from open_forecast.features import build_sequence_partitions, chronological_split
+
+    index = pd.date_range("2023-01-01", periods=24 * 40, freq="h")
+    rng = np.random.default_rng(0)
+    hourly = pd.DataFrame(
+        {"Z1": 100 + rng.normal(size=len(index)), "Z2": 50 + rng.normal(size=len(index)),
+         "T": rng.normal(size=len(index))},
+        index=index,
+    )
+    # the earliest origin with all weekly lags available (as the tabular harness uses)
+    origins = index[168 + 1 : len(index) - 24]
+    split = chronological_split(origins, horizon_hours=24, train_fraction=0.6, validation_fraction=0.2)
+    parts = build_sequence_partitions(
+        hourly, ["Z1", "Z2"], ["T"], "weather_time_history_weekly",
+        horizon_hours=24, lookback_hours=24, split=split, weekly_lags=(144, 168),
+    )
+    for name in ("train", "validation", "test"):
+        assert not np.isnan(parts[name].x).any(), name
+        assert not np.isnan(parts[name].y).any(), name
+    # origins start at hour 169; those before hour 191 have a 24-h lookback
+    # that starts before hour 168 (the first full weekly lag): 22 are dropped
+    assert len(parts["train"].index) == len(split.train) - 22

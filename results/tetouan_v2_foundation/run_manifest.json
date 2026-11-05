@@ -1,0 +1,151 @@
+{
+  "framework": "open-forecast-framework",
+  "models": [
+    "persistence",
+    "seasonal_naive",
+    "chronos_bolt_small",
+    "chronos_bolt_base",
+    "chronos2"
+  ],
+  "feature_modes": [
+    "weather_time",
+    "weather_time_history",
+    "weather_time_history_weekly"
+  ],
+  "datetime_audit": {
+    "formats_used": {
+      "month-day-year (hyphen)": 0,
+      "month/day/year (slash)": 52416
+    },
+    "first_timestamp": "2017-01-01 00:00:00",
+    "last_timestamp": "2017-12-30 23:50:00",
+    "source_interval": "0 days 00:10:00",
+    "source_rows_per_hour": 6,
+    "hourly_rows": 8736,
+    "renamed_columns": {
+      "Zone 1 Power Consumption": "Zone 1",
+      "Zone 2  Power Consumption": "Zone 2",
+      "Zone 3  Power Consumption": "Zone 3"
+    }
+  },
+  "split": {
+    "horizon_hours": 24,
+    "purge_embargo_hours": 24,
+    "train_forecast_origins": 5980,
+    "validation_forecast_origins": 1257,
+    "test_forecast_origins": 1259,
+    "validation_embargoed_origins": 24,
+    "test_embargoed_origins": 24,
+    "train_forecast_origin_end": "2017-09-14 03:00:00",
+    "validation_forecast_origin_start": "2017-09-15 04:00:00",
+    "validation_forecast_origin_end": "2017-11-06 12:00:00",
+    "test_forecast_origin_start": "2017-11-07 13:00:00",
+    "test_forecast_origin_end": "2017-12-29 23:00:00",
+    "train_target_end": "2017-09-15 03:00:00",
+    "validation_target_end": "2017-11-07 12:00:00",
+    "test_target_end": "2017-12-30 23:00:00"
+  },
+  "feature_availability": {
+    "weather_time": "target-time weather proxy + known calendar",
+    "weather_time_history": "weather_time + historical consumption",
+    "weather_time_history_weekly": "weather_time_history + target-aligned weekly lags"
+  },
+  "config": {
+    "dataset": {
+      "unit": "dataset units",
+      "path": "data/raw/power_consumption.csv",
+      "datetime_column": "DateTime",
+      "target_columns": [
+        "Zone 1",
+        "Zone 2"
+      ],
+      "weather_columns": [
+        "Temperature",
+        "Humidity",
+        "Wind Speed",
+        "general diffuse flows",
+        "diffuse flows"
+      ]
+    },
+    "forecast": {
+      "horizon_hours": 24,
+      "lookback_hours": 24
+    },
+    "split": {
+      "train_fraction": 0.7,
+      "validation_fraction": 0.15
+    },
+    "features": {
+      "tree_lags": [
+        1,
+        2,
+        3,
+        6,
+        12,
+        24
+      ],
+      "rolling_windows": [
+        3,
+        24
+      ],
+      "target_weather_proxy": "observed_target_weather",
+      "weekly_lags": [
+        144,
+        168
+      ]
+    },
+    "training": {
+      "seed": 42,
+      "batch_size": 64,
+      "epochs": 60,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "early_stopping_patience": 10
+    },
+    "models": {
+      "random_forest": {
+        "n_estimators": 200,
+        "max_depth": 20
+      },
+      "extra_trees": {
+        "n_estimators": 200,
+        "max_depth": 20
+      },
+      "hist_gradient_boosting": {
+        "max_iter": 200,
+        "max_depth": 10,
+        "learning_rate": 0.05
+      },
+      "lstm": {
+        "hidden_size": 128,
+        "num_layers": 2,
+        "dropout": 0.1
+      },
+      "cross_attention_transformer": {
+        "d_model": 64,
+        "nhead": 4,
+        "num_layers": 2,
+        "dropout": 0.1
+      },
+      "patchtst": {
+        "d_model": 64,
+        "nhead": 4,
+        "num_layers": 2,
+        "patch_length": 4,
+        "stride": 2,
+        "dropout": 0.1
+      }
+    }
+  },
+  "provenance": {
+    "git_revision": "unavailable (repository not initialized or committed)",
+    "source_tree_sha256": "1a25d70b01c11efa66643c62290b1e8bcb2c4671bd9539aaf13f38745fa5e729",
+    "raw_data_sha256": "0184f2e6db6b49dfea007f35fe4f6bab7ec4ad6ed1337e747bb1b439ad6cb764",
+    "python": "3.14.7 | packaged by Anaconda, Inc. | (main, Aug 14 2026, 10:13:42) [Clang 20.1.8 ]",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit_learn": "1.9.1",
+    "torch": "2.14.0"
+  }
+}

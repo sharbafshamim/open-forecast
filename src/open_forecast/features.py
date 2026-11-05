@@ -158,7 +158,8 @@ def build_sequence_partitions(
     exo_values = exogenous.to_numpy(dtype=np.float32)
     target_values = hourly[targets].to_numpy(dtype=np.float32)
     # Weekly-lag channels for Mode B+: at sequence step s the channel holds
-    # y(s - lag). Early rows are NaN and are excluded by the common origin set.
+    # y(s - lag). The lookback window of the earliest origins reaches before the
+    # first available lag, so those samples contain NaN and are dropped below.
     weekly_values = [
         hourly[targets].shift(lag).to_numpy(dtype=np.float32) for lag in weekly_lags
     ]
@@ -199,6 +200,11 @@ def build_sequence_partitions(
     y = np.stack(labels).astype(np.float32)
     index = pd.DatetimeIndex(origins)
 
+    # A sample is usable only if every input step and every target is observed.
+    # Training and validation drop incomplete samples; the test set must be
+    # complete so that every model family is scored on identical origins.
+    complete = ~(np.isnan(x).any(axis=(1, 2, 3)) | np.isnan(y).any(axis=1))
+
     partitions: dict[str, SequencePartition] = {}
     for name, partition_index in {
         "train": split.train,
@@ -206,6 +212,14 @@ def build_sequence_partitions(
         "test": split.test,
     }.items():
         mask = index.isin(partition_index)
+        if name == "test":
+            if not complete[mask].all():
+                raise ValueError(
+                    f"{int((~complete[mask]).sum())} test sequences contain missing values; "
+                    "increase the history before the test period or shorten the lookback"
+                )
+        else:
+            mask &= complete
         partitions[name] = SequencePartition(
             x=x[mask], y=y[mask], index=index[mask]
         )

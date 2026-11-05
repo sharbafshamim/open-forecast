@@ -1,0 +1,12 @@
+model,information_set,mae,rmse,smape_pct,rmae
+naive,-,19.844,34.461,26.401,1.0
+lear,price_only,13.158,24.05,17.78,0.663
+hist_gradient_boosting,price_only,14.805,26.711,19.812,0.746
+extra_trees,price_only,14.356,26.474,19.117,0.723
+chronos_bolt_small,price_only,13.101,23.696,17.906,0.66
+chronos_bolt_base,price_only,13.198,24.132,17.863,0.665
+chronos2,price_only,12.398,22.629,16.994,0.625
+lear,price_exogenous,12.213,22.832,16.49,0.615
+hist_gradient_boosting,price_exogenous,13.208,23.729,17.55,0.666
+extra_trees,price_exogenous,13.515,25.177,17.997,0.681
+chronos2,price_exogenous,10.164,18.515,14.209,0.512

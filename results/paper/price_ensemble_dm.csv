@@ -1,0 +1,77 @@
+versus,p_iid,p_newey_west,p_other_better_newey_west,p_holm_newey_west,market
+chronos2|price_exogenous,0.89033,0.882452,0.117548,0.882452,ISO-NE
+chronos2|price_only,0.0,0.0,1.0,0.0,ISO-NE
+chronos_bolt_base|price_only,0.0,0.0,1.0,0.0,ISO-NE
+chronos_bolt_small|price_only,0.0,0.0,1.0,0.0,ISO-NE
+extra_trees|price_exogenous,0.0,0.000308,0.999692,0.000924,ISO-NE
+extra_trees|price_only,0.0,0.0,1.0,0.0,ISO-NE
+hist_gradient_boosting|price_exogenous,0.0,0.000735,0.999265,0.001469,ISO-NE
+hist_gradient_boosting|price_only,0.0,1e-06,0.999999,2e-06,ISO-NE
+lear|price_exogenous,0.0,0.0,1.0,1e-06,ISO-NE
+lear|price_only,0.0,0.0,1.0,0.0,ISO-NE
+naive|price_only,0.0,0.0,1.0,0.0,ISO-NE
+chronos2|price_exogenous,4e-06,4e-06,0.999996,1.5e-05,PJM
+chronos2|price_only,0.0,0.0,1.0,0.0,PJM
+chronos_bolt_base|price_only,0.0,0.0,1.0,0.0,PJM
+chronos_bolt_small|price_only,0.0,0.0,1.0,0.0,PJM
+extra_trees|price_exogenous,0.0,0.0,1.0,0.0,PJM
+extra_trees|price_only,0.0,0.0,1.0,0.0,PJM
+hist_gradient_boosting|price_exogenous,4.3e-05,0.003578,0.996422,0.007156,PJM
+hist_gradient_boosting|price_only,0.0,0.0,1.0,0.0,PJM
+lear|price_exogenous,0.0,0.0,1.0,0.0,PJM
+lear|price_only,0.0,0.0,1.0,0.0,PJM
+naive|price_only,0.0,0.0,1.0,0.0,PJM
+LEAR ensemble (published),0.0,6e-06,0.999994,1.8e-05,PJM
+DNN ensemble (published),0.395565,0.392241,0.607759,0.392241,PJM
+chronos2|price_exogenous,0.999993,0.999645,0.000355,0.999645,NP
+chronos2|price_only,0.0,0.0,1.0,0.0,NP
+chronos_bolt_base|price_only,0.0,0.0,1.0,0.0,NP
+chronos_bolt_small|price_only,0.0,0.0,1.0,0.0,NP
+extra_trees|price_exogenous,0.0,0.0,1.0,0.0,NP
+extra_trees|price_only,0.0,0.0,1.0,0.0,NP
+hist_gradient_boosting|price_exogenous,0.0,0.0,1.0,0.0,NP
+hist_gradient_boosting|price_only,0.0,0.0,1.0,0.0,NP
+lear|price_exogenous,0.0,0.0,1.0,0.0,NP
+lear|price_only,0.0,0.0,1.0,0.0,NP
+naive|price_only,0.0,0.0,1.0,0.0,NP
+LEAR ensemble (published),2e-06,1e-05,0.99999,2.9e-05,NP
+DNN ensemble (published),0.076609,0.086472,0.913528,0.172944,NP
+chronos2|price_exogenous,0.893665,0.876775,0.123225,0.876775,DE
+chronos2|price_only,0.0,0.0,1.0,0.0,DE
+chronos_bolt_base|price_only,0.0,0.0,1.0,0.0,DE
+chronos_bolt_small|price_only,0.0,0.0,1.0,0.0,DE
+extra_trees|price_exogenous,0.0,0.0,1.0,0.0,DE
+extra_trees|price_only,0.0,0.0,1.0,0.0,DE
+hist_gradient_boosting|price_exogenous,0.0,0.0,1.0,0.0,DE
+hist_gradient_boosting|price_only,0.0,0.0,1.0,0.0,DE
+lear|price_exogenous,0.0,0.0,1.0,0.0,DE
+lear|price_only,0.0,0.0,1.0,0.0,DE
+naive|price_only,0.0,0.0,1.0,0.0,DE
+LEAR ensemble (published),0.0,0.0,1.0,0.0,DE
+DNN ensemble (published),5.1e-05,0.000457,0.999543,0.000914,DE
+chronos2|price_exogenous,0.553587,0.552983,0.447017,0.552983,BE
+chronos2|price_only,7e-06,2e-06,0.999998,8e-06,BE
+chronos_bolt_base|price_only,0.0,2e-06,0.999998,8e-06,BE
+chronos_bolt_small|price_only,0.0,1e-06,0.999999,3e-06,BE
+extra_trees|price_exogenous,0.0,0.0,1.0,0.0,BE
+extra_trees|price_only,0.0,0.0,1.0,0.0,BE
+hist_gradient_boosting|price_exogenous,0.0,0.0,1.0,0.0,BE
+hist_gradient_boosting|price_only,0.0,0.0,1.0,0.0,BE
+lear|price_exogenous,0.0,0.0,1.0,0.0,BE
+lear|price_only,0.0,0.0,1.0,0.0,BE
+naive|price_only,0.0,0.0,1.0,0.0,BE
+LEAR ensemble (published),0.0,0.0,1.0,0.0,BE
+DNN ensemble (published),0.070005,0.089741,0.910259,0.179482,BE
+chronos2|price_exogenous,0.530736,0.530794,0.469206,0.530794,FR
+chronos2|price_only,0.0,0.0,1.0,0.0,FR
+chronos_bolt_base|price_only,0.0,0.0,1.0,0.0,FR
+chronos_bolt_small|price_only,0.0,0.0,1.0,0.0,FR
+extra_trees|price_exogenous,0.0,0.0,1.0,0.0,FR
+extra_trees|price_only,0.0,0.0,1.0,0.0,FR
+hist_gradient_boosting|price_exogenous,0.0,0.0,1.0,0.0,FR
+hist_gradient_boosting|price_only,0.0,0.0,1.0,0.0,FR
+lear|price_exogenous,0.0,0.0,1.0,0.0,FR
+lear|price_only,0.0,0.0,1.0,0.0,FR
+naive|price_only,0.0,0.0,1.0,0.0,FR
+LEAR ensemble (published),0.0,0.0,1.0,0.0,FR
+DNN ensemble (published),0.00174,0.010867,0.989133,0.021733,FR

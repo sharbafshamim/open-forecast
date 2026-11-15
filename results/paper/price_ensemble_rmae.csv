@@ -1,0 +1,15 @@
+forecast,ISO-NE,PJM,NP,DE,BE,FR
+DNN ensemble (published),,0.591,0.532,0.425,0.716,0.649
+LEAR ensemble (published),,0.622,0.549,0.449,0.748,0.668
+chronos2|price_exogenous,0.518,0.614,0.488,0.394,0.704,0.622
+chronos2|price_only,0.625,0.711,0.612,0.645,0.771,0.716
+chronos_bolt_base|price_only,0.665,0.745,0.643,0.672,0.772,0.74
+chronos_bolt_small|price_only,0.66,0.745,0.657,0.67,0.791,0.739
+ensemble: Chronos-2 + LEAR (equal weights),0.531,0.588,0.519,0.4,0.705,0.622
+extra_trees|price_exogenous,0.649,0.664,0.779,0.584,0.818,0.811
+extra_trees|price_only,0.699,0.738,0.776,0.696,0.811,0.792
+hist_gradient_boosting|price_exogenous,0.63,0.667,0.717,0.513,0.807,0.792
+hist_gradient_boosting|price_only,0.724,0.767,0.78,0.706,0.819,0.814
+lear|price_exogenous,0.627,0.636,0.641,0.494,0.792,0.729
+lear|price_only,0.663,0.726,0.708,0.654,0.804,0.76
+naive|price_only,1.0,1.0,1.0,1.0,1.0,1.0

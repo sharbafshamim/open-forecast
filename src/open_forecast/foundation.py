@@ -108,8 +108,12 @@ def predict_load(
     weather: list[str],
     horizon: int,
     settings: dict,
+    future_frame: pd.DataFrame | None = None,
 ) -> np.ndarray:
     """Return y_hat(t + H) for every origin t and zone, shape [origins, zones].
+
+    ``future_frame`` (same index as ``hourly``) supplies the future weather
+    covariates over t+1..t+H, e.g. archived forecasts; default ``hourly``.
 
     Context = the last ``context_hours`` observations ending at t (inclusive).
     chronos2 additionally receives the zone's weather columns as covariates:
@@ -122,6 +126,7 @@ def predict_load(
     positions = hourly.index.get_indexer(origins)
     if (positions < 0).any():
         raise ValueError("Forecast origin missing from the hourly index.")
+    future_frame = hourly if future_frame is None else future_frame
     result = np.zeros((len(origins), len(targets)))
     for z, zone in enumerate(targets):
         series = hourly[zone].to_numpy(dtype=float)
@@ -132,7 +137,7 @@ def predict_load(
             contexts.append(series[lo : p + 1])
             if model in COVARIATE_MODELS:
                 past.append({c: hourly[c].to_numpy()[lo : p + 1] for c in zone_weather})
-                future.append({c: hourly[c].to_numpy()[p + 1 : p + 1 + horizon] for c in zone_weather})
+                future.append({c: future_frame[c].to_numpy()[p + 1 : p + 1 + horizon] for c in zone_weather})
         use_cov = model in COVARIATE_MODELS
         path = forecast_batch(model, contexts, horizon, past if use_cov else None,
                               future if use_cov else None, device, batch_size)
@@ -150,14 +155,18 @@ def predict_price_days(
     exogenous_lags: dict[str, tuple[int, ...]],
     use_exogenous: bool,
     settings: dict,
+    past_delay_hours: dict[str, int] | None = None,
 ) -> np.ndarray:
     """Return [len(days), 24] forecasts.
 
     With ``use_exogenous`` (chronos2 only), every exogenous column is a past
     covariate; columns whose declared lags include 0 (known for day D) are also
     supplied as future covariates. Past-only columns (e.g. ISO-NE RT_Demand)
-    are never given for day D.
+    are never given for day D, and an observed series is delayed by
+    ``past_delay_hours[column]`` so that its newest value is the last one
+    observed before the bidding gate on D-1.
     """
+    past_delay_hours = past_delay_hours or {}
     context = settings.get("context_hours", 2048)
     device = settings.get("device", os.environ.get("OPEN_FORECAST_DEVICE", "cpu"))
     price = hourly["Price"].to_numpy(dtype=float)
@@ -169,7 +178,8 @@ def predict_price_days(
         lo = max(0, end - context)
         contexts.append(price[lo:end])
         if use_exogenous:
-            past.append({c: hourly[c].to_numpy()[lo:end] for c in exogenous_lags})
+            past.append({c: hourly[c].shift(past_delay_hours.get(c, 0)).bfill().to_numpy()[lo:end]
+                         for c in exogenous_lags})
             future.append({c: hourly[c].to_numpy()[end : end + 24]
                            for c, lags in exogenous_lags.items() if 0 in lags})
     if use_exogenous and model not in COVARIATE_MODELS:

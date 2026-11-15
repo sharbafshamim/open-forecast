@@ -1,0 +1,2 @@
+model,feature_mode,folds,mean_rmse,median_rmse,mean_rank,wins
+cross_attention_transformer,weather_time_history_weekly,13,98.04165351221171,98.18507317179125,1.0,13

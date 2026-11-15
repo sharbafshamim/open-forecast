@@ -9,9 +9,9 @@ test:
   start: "2025-01-01"
   end: "2025-12-31"
 calibration_days: null        # expanding window (only ~2 years of history)
-recalibration_days:        # days between refits (LEAR weekly; trees every 4 weeks)
+recalibration_days:        # days between refits
   lear: 7
-  default: 28
+  default: 7                 # every model refits weekly (equal recalibration)
 seed: 42
 models:
   hgb: {max_iter: 300, learning_rate: 0.05, max_leaf_nodes: 31}

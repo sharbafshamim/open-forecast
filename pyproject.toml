@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "open-forecast"
-version = "0.3.0"
+version = "0.5.0"
 description = "Leakage-audited benchmark for day-ahead electricity load and price forecasting: trees, deep models and zero-shot foundation models under declared information sets"
 readme = "README.md"
 requires-python = ">=3.10"

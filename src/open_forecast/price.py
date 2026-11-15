@@ -18,14 +18,27 @@ Information sets
 ----------------
 ``price_only``      prices D-1, D-2, D-3, D-7 (24 h each) + day-of-week dummies
 ``price_exogenous`` price_only + exogenous series at D, D-1 and D-7
-                    (EPF: published day-ahead forecasts; ISO-NE: declared
-                    weather proxy at D and observed load at D-1 / D-7 only)
+                    (EPF: published day-ahead forecasts). ISO-NE: declared
+                    weather proxy at D; observed load only where it is known
+                    at the 10:00 gate of D-1, i.e. D-2, D-7 and the D-1 hours
+                    ending by 09:00 (``GATE_HOURS``).
+
+Availability gate
+-----------------
+Bids for day D are submitted at about 10:00 on D-1. An observed (not
+forecast) series is therefore known for D-1 only up to hour-ending 09:00.
+``PriceData.partial_d1_hours`` lists how many D-1 hours of each observed
+series are usable, and ``PriceData.past_delay_hours`` how far the series must
+be delayed when it is given to a foundation model as a past covariate, so that
+its newest value is the last one observed before the gate.
 """
 
 from __future__ import annotations
 
+import hashlib
+import json
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
@@ -35,10 +48,12 @@ from sklearn.ensemble import ExtraTreesRegressor, HistGradientBoostingRegressor
 from sklearn.linear_model import Lasso, LassoLarsIC
 
 from .foundation import COVARIATE_MODELS, FOUNDATION_MODELS, predict_price_days
+from .significance import multivariate_dm  # noqa: F401  (re-exported)
 
 PRICE_LAGS = (1, 2, 3, 7)
 EXOGENOUS_LAGS = (0, 1, 7)
 INFORMATION_SETS = ("price_only", "price_exogenous")
+GATE_HOURS = 9          # D-1 hours 00-08 (hour-ending 01-09) are observed by the 10:00 gate
 PRICE_MODELS = ("naive", "lear", "hist_gradient_boosting", "extra_trees")
 
 
@@ -51,6 +66,8 @@ class PriceData:
     hourly: pd.DataFrame
     exogenous_lags: dict[str, tuple[int, ...]]
     description: dict[str, str]
+    partial_d1_hours: dict[str, int] = field(default_factory=dict)
+    past_delay_hours: dict[str, int] = field(default_factory=dict)
 
 
 def load_epftoolbox_csv(path: str | Path) -> PriceData:
@@ -91,7 +108,9 @@ def load_isone_price(paths: list[str | Path]) -> PriceData:
     already has 24 rows per day and is used as published.
 
     Exogenous: system Dry_Bulb / Dew_Point at D (declared weather proxy) and
-    RT_Demand at D-1 / D-7 (observed before submission). DA_Demand is excluded.
+    observed RT_Demand where it is known at the 10:00 gate of D-1: all hours
+    of D-2 and D-7 and the first ``GATE_HOURS`` hours of D-1. DA_Demand is
+    excluded (it is cleared by the same auction as the price).
     """
     columns = ["DA_LMP", "RT_Demand", "Dry_Bulb", "Dew_Point"]
     frames = [
@@ -108,13 +127,16 @@ def load_isone_price(paths: list[str | Path]) -> PriceData:
     hourly.index.name = "ts"
     return PriceData(
         hourly,
-        {"Dry_Bulb": (0,), "Dew_Point": (0,), "RT_Demand": (1, 7)},
+        {"Dry_Bulb": (0,), "Dew_Point": (0,), "RT_Demand": (2, 7)},
         {
             "Dry_Bulb": "observed day-D temperature (declared weather-forecast proxy)",
             "Dew_Point": "observed day-D dew point (declared weather-forecast proxy)",
-            "RT_Demand": "observed load, D-1 and D-7 only",
+            "RT_Demand": f"observed load: D-2, D-7 and D-1 hours ending by {GATE_HOURS:02d}:00",
             "dst_policy": f"24 h local market day; {filled} spring hours interpolated, 02X averaged",
         },
+        partial_d1_hours={"RT_Demand": GATE_HOURS},
+        # newest past-covariate value = D-1 hour-ending 09:00 (index 8): delay 23 - 8 = 15 h
+        past_delay_hours={"RT_Demand": 24 - GATE_HOURS},
     )
 
 
@@ -162,6 +184,11 @@ def build_design(data: PriceData, information_set: str) -> tuple[pd.DataFrame, p
                 shifted = matrix.shift(lag)
                 shifted.columns = [f"{column}_d{lag}_h{h}" for h in range(24)]
                 blocks.append(shifted)
+            known = data.partial_d1_hours.get(column, 0)
+            if known:
+                partial = matrix.shift(1).iloc[:, :known]
+                partial.columns = [f"{column}_d1_h{h}" for h in range(known)]
+                blocks.append(partial)
     dow = pd.get_dummies(pd.Series(days.dayofweek, index=days), prefix="dow").astype(float)
     x = pd.concat([*blocks, dow], axis=1)
     y = price.copy()
@@ -280,21 +307,17 @@ def price_metrics(actual: pd.DataFrame, predicted: pd.DataFrame, naive: pd.DataF
     }
 
 
-def multivariate_dm(actual: np.ndarray, pred_a: np.ndarray, pred_b: np.ndarray, norm: int = 1):
-    """H0: forecast A is not less accurate than B. Small p => B significantly better than A."""
-    loss_a = np.linalg.norm(actual - pred_a, ord=norm, axis=1)
-    loss_b = np.linalg.norm(actual - pred_b, ord=norm, axis=1)
-    d = loss_a - loss_b
-    statistic = d.mean() / np.sqrt(d.var(ddof=0) / len(d))
-    return float(statistic), float(1 - stats.norm.cdf(statistic))
-
-
 def run_price_experiment(config: dict, models: list[str], information_sets: list[str], output: Path,
                          root: Path) -> pd.DataFrame:
     output.mkdir(parents=True, exist_ok=True)
     data = load_price_data(config["dataset"], root)
     test_cfg = config["test"]
     seed = config.get("seed", 42)
+    # cached forecasts are only reused for an identical configuration and input declaration
+    run_key = hashlib.sha256(json.dumps(
+        {"config": config, "inputs": {k: list(v) for k, v in data.exogenous_lags.items()},
+         "partial": data.partial_d1_hours, "delay": data.past_delay_hours},
+        sort_keys=True, default=str).encode()).hexdigest()[:10]
     rows, preds, timings = [], {}, {}
     for info in information_sets:
         if info == "price_exogenous" and not data.exogenous_lags:
@@ -307,7 +330,7 @@ def run_price_experiment(config: dict, models: list[str], information_sets: list
             if model == "naive" and info != information_sets[0]:
                 continue
             began = time.time()
-            cache = output / "forecasts" / f"{model}__{info}.csv"
+            cache = output / "forecasts" / f"{model}__{info}__{run_key}.csv"
             if model != "naive" and cache.exists():
                 forecast = pd.read_csv(cache, index_col=0, parse_dates=True)
                 forecast.columns = y.columns
@@ -318,7 +341,8 @@ def run_price_experiment(config: dict, models: list[str], information_sets: list
                 if info == "price_exogenous" and model not in COVARIATE_MODELS:
                     continue
                 values = predict_price_days(model, data.hourly, test_days, data.exogenous_lags,
-                                            info == "price_exogenous", config.get("foundation", {}))
+                                            info == "price_exogenous", config.get("foundation", {}),
+                                            data.past_delay_hours)
                 forecast = pd.DataFrame(values, index=test_days, columns=y.columns)
             else:
                 every = config.get("recalibration_days", 7)
@@ -352,7 +376,8 @@ def run_price_experiment(config: dict, models: list[str], information_sets: list
     actual = y.stack().rename("actual").reset_index()
     actual.columns = ["day", "hour", "actual"]
     long = pd.concat(long).merge(actual, on=["day", "hour"], how="left")
-    long.to_csv(output / "price_predictions.csv", index=False)
+    # compressed per-day forecasts are committed so the significance tests can be re-run
+    long.to_csv(output / "price_predictions.csv.gz", index=False, compression="gzip")
 
     # pairwise multivariate DM p-values on the common day set
     keys = list(preds)
@@ -361,13 +386,17 @@ def run_price_experiment(config: dict, models: list[str], information_sets: list
         common = common.intersection(preds[key].index)
     truth = y.loc[common].to_numpy()
     names = [f"{m}|{i}" if m != "naive" else "naive" for m, i in keys]
-    table = pd.DataFrame(index=names, columns=names, dtype=float)
-    for ka, na in zip(keys, names):
-        for kb, nb in zip(keys, names):
-            if ka != kb:
-                table.loc[na, nb] = multivariate_dm(truth, preds[ka].loc[common].to_numpy(),
-                                                    preds[kb].loc[common].to_numpy())[1]
-    table.to_csv(output / "dm_pvalues.csv")
+    # cell [A, B] = p-value of H1 "column model B is more accurate than row model A".
+    # dm_pvalues.csv: i.i.d. variance as in epftoolbox; dm_pvalues_nw.csv: Newey-West
+    # variance with a one-week bandwidth (robust to autocorrelated daily losses).
+    for suffix, lags in (("", 0), ("_nw", 7)):
+        table = pd.DataFrame(index=names, columns=names, dtype=float)
+        for ka, na in zip(keys, names):
+            for kb, nb in zip(keys, names):
+                if ka != kb:
+                    table.loc[na, nb] = multivariate_dm(truth, preds[ka].loc[common].to_numpy(),
+                                                        preds[kb].loc[common].to_numpy(), lags=lags)[1]
+        table.to_csv(output / f"dm_pvalues{suffix}.csv")
     (output / "price_manifest.txt").write_text(
         "\n".join([f"{k}: {v}" for k, v in config.items()]
                   + [f"exogenous: {data.description}", f"common test days: {len(common)}"])

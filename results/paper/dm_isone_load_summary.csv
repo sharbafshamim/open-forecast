@@ -1,0 +1,7 @@
+model,versus,better,worse,better_daily
+chronos2 (B+),hist_gradient_boosting (B),0,1,0
+lstm (B+),chronos2 (B+),3,0,3
+lstm (B+),hist_gradient_boosting (B),1,0,1
+lstm (B+),hist_gradient_boosting (B+),1,0,1
+lstm (B+),lstm (B),1,0,1
+lstm (B+),persistence (B),8,0,8

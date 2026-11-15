@@ -19,7 +19,7 @@ try:
 except ImportError:  # deep adapters unavailable; tree/naive runs still work
     torch = None
 
-from .contracts import DatasetAudit
+from .contracts import DatasetAudit, TabularPartition
 from .evaluation import metric_rows, prediction_rows
 from .features import (
     SequenceScaler,
@@ -189,6 +189,26 @@ def _write_manifest(
     )
 
 
+NAIVE_MODE = {"persistence": "weather_time_history", "seasonal_naive": "weather_time_history_weekly"}
+
+
+def with_weather_forecasts(hourly: pd.DataFrame, path: str | Path, weather: list[str]) -> pd.DataFrame:
+    """Copy of ``hourly`` whose weather columns hold archived forecasts where available.
+
+    The CSV has a timestamp column ``ts`` on the same clock as ``hourly`` and one
+    column per weather variable, each value being the forecast for that hour
+    issued before the forecast origin (e.g. Open-Meteo ``previous_day2``).
+    """
+    fc = pd.read_csv(path, parse_dates=["ts"]).set_index("ts").sort_index()
+    missing = sorted(set(weather) - set(fc.columns))
+    if missing:
+        raise ValueError(f"weather forecast file lacks columns: {missing}")
+    out = hourly.copy()
+    aligned = fc[weather].reindex(out.index)
+    out[weather] = aligned.where(aligned.notna(), out[weather])
+    return out
+
+
 def run_experiment(
     config: dict,
     models: list[str],
@@ -239,6 +259,15 @@ def run_experiment(
             dataset["weather_columns"],
         )
 
+    # Optional operational test: archived day-ahead weather FORECASTS replace the
+    # observed-weather proxy in every future-weather input of the test origins.
+    # Training and validation keep the observed weather.
+    test_hourly = hourly
+    if dataset.get("weather_forecast_csv"):
+        test_hourly = with_weather_forecasts(hourly, dataset["weather_forecast_csv"],
+                                             dataset["weather_columns"])
+        # recorded in the run manifest through the config (dataset.weather_forecast_csv)
+
     # Build every requested mode's frame once, then use the INTERSECTION of
     # their valid origins as the common index. Different modes trim different
     # rows (weather_time only trims the tail via the target shift;
@@ -259,6 +288,7 @@ def run_experiment(
             config["features"]["tree_lags"],
             config["features"]["rolling_windows"],
             config["features"].get("weekly_lags", [144, 168]),
+            config["features"].get("weather_path_stats", False),
         )
 
     common_index = mode_frames[modes[0]][0].index
@@ -305,6 +335,15 @@ def run_experiment(
             tabular_y,
             split,
         )
+        if test_hourly is not hourly:
+            fx, _ = build_tabular_frame(
+                test_hourly, dataset["target_columns"], dataset["weather_columns"], mode,
+                forecast["horizon_hours"], config["features"]["tree_lags"],
+                config["features"]["rolling_windows"],
+                config["features"].get("weekly_lags", [144, 168]),
+                config["features"].get("weather_path_stats", False),
+            )
+            tabs["test"] = TabularPartition(fx.loc[split.test], tabs["test"].y)
 
         if set(models) & DEEP_MODELS:
             sequences = build_sequence_partitions(
@@ -317,6 +356,12 @@ def run_experiment(
                 split,
                 config["features"].get("weekly_lags", [144, 168]),
             )
+            if test_hourly is not hourly:
+                sequences["test"] = build_sequence_partitions(
+                    test_hourly, dataset["target_columns"], dataset["weather_columns"], mode,
+                    forecast["horizon_hours"], forecast["lookback_hours"], split,
+                    config["features"].get("weekly_lags", [144, 168]),
+                )["test"]
 
             scaler = SequenceScaler()
             sequences["train"] = scaler.fit_transform(
@@ -330,19 +375,14 @@ def run_experiment(
             )
 
         for model_name in models:
-            # A persistence or seasonal-naive demand forecast consumes observed
-            # consumption at the forecast origin. It is a valuable Mode B
-            # reference, but it is not a valid exogenous-only Mode A method.
-            if (
-                model_name in NAIVE_MODELS
-                and mode != "weather_time_history"
-            ):
+            # Benchmarks and foundation models are scored once, in the
+            # information set whose data they use: persistence needs y(t) (B);
+            # the weekly seasonal naive needs y(t+H-168) and the foundation
+            # models a 512-h load context (B+). chronos2 also receives the
+            # weather series as covariates; chronos-bolt is univariate.
+            if model_name in NAIVE_MODELS and mode != NAIVE_MODE[model_name]:
                 continue
-
-            # Foundation models always condition on target history, so they are
-            # evaluated in the history mode only (chronos2 also gets the weather
-            # proxy as covariates; chronos-bolt is univariate).
-            if model_name in FOUNDATION_MODELS and mode != "weather_time_history":
+            if model_name in FOUNDATION_MODELS and mode != "weather_time_history_weekly":
                 continue
 
             if model_name in FOUNDATION_MODELS:
@@ -358,6 +398,7 @@ def run_experiment(
                     model_name, hourly, tabs["test"].x.index,
                     dataset["target_columns"], dataset["weather_columns"],
                     forecast["horizon_hours"], settings,
+                    future_frame=test_hourly,
                 )
                 validation_y = tabs["validation"].y.to_numpy()
                 test_y = tabs["test"].y.to_numpy()
@@ -486,6 +527,11 @@ def run_experiment(
         output / "predictions.csv",
         index=False,
     )
+    # compact test-set predictions (committed) so the significance tests can be
+    # re-run without re-training: test split only, values rounded to 0.1 unit
+    compact = predictions[predictions["split"] == "test"].drop(columns=["split", "target_time"])
+    compact = compact.assign(actual=compact["actual"].round(1), predicted=compact["predicted"].round(1))
+    compact.to_csv(output / "test_predictions.csv.gz", index=False, compression="gzip")
 
     if save_figures:
         save_mode_comparison(

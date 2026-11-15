@@ -1,0 +1,3 @@
+model,feature_mode,folds,mean_rmse,median_rmse,mean_rank,wins
+chronos2,weather_time_history_weekly,13,105.58219304531757,97.92205978391291,1.0,13
+chronos_bolt_small,weather_time_history_weekly,13,173.21196199447562,143.94942829443946,2.0,0

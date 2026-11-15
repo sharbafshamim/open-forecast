@@ -27,4 +27,8 @@ results/**/predictions.csv
 results/**/price_predictions.csv
 results/**/forecasts/
 results/**/fold_*/
+# compressed test-set predictions (*.csv.gz) ARE committed
 *.log
+
+# Scratch notebooks
+Untitled*.ipynb

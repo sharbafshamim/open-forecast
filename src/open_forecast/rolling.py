@@ -45,7 +45,7 @@ def run_rolling(config: dict, models: list[str], modes: list[str], output: str |
     rolling = config["rolling"]
     starts = pd.date_range(rolling["first_test_start"], rolling["last_test_start"],
                            freq=f"{rolling['window_days']}D")
-    all_metrics = []
+    all_metrics, fold_predictions = [], []
     for fold, start in enumerate(starts):
         fold_dir = output / f"fold_{fold:02d}_{start.date()}"
         if (fold_dir / "metrics.csv").exists():
@@ -58,11 +58,19 @@ def run_rolling(config: dict, models: list[str], modes: list[str], output: str |
             )
         metrics = metrics[metrics["split"] == "test"].copy()
         metrics.insert(0, "fold", fold)
+        compact = fold_dir / "test_predictions.csv.gz"
+        if compact.exists():
+            fold_pred = pd.read_csv(compact)
+            fold_pred.insert(0, "fold", fold)
+            fold_predictions.append(fold_pred)
         metrics.insert(1, "test_start", str(start.date()))
         all_metrics.append(metrics)
         print(f"fold {fold} ({start.date()}) done", flush=True)
     metrics = pd.concat(all_metrics, ignore_index=True)
     metrics.to_csv(output / "rolling_metrics.csv", index=False)
+    if fold_predictions:   # all windows' test forecasts in one committed file
+        pd.concat(fold_predictions, ignore_index=True).to_csv(
+            output / "rolling_test_predictions.csv.gz", index=False, compression="gzip")
 
     agg = metrics[metrics["scope"] == "aggregate"]
     agg = agg.assign(rank=agg.groupby("fold")["rmse"].rank())

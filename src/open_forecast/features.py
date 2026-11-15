@@ -19,6 +19,18 @@ HISTORY_MODES = {"weather_time_history", "weather_time_history_weekly"}
 # 144 h equals y(t + H - 168 h): the value the seasonal-naive benchmark uses.
 DEFAULT_WEEKLY_LAGS = (144, 168)
 
+# Information sets are declared as the DATA available at origin t, not as a
+# feature list. Every model family may use any subset of the declared data;
+# ``tests/test_information_sets.py`` checks this by perturbing everything
+# outside the window and asserting that no input changes.
+#   A  (weather_time):                 calendar of the target hour; weather
+#                                      series up to the target hour t+H
+#                                      (observed past + declared proxy for t+1..t+H)
+#   B  (weather_time_history):         A + load observed in [t-23, t]
+#   B+ (weather_time_history_weekly):  A + all load observed up to t
+LOAD_WINDOW_HOURS = {"weather_time": 0, "weather_time_history": 24,
+                     "weather_time_history_weekly": None}   # None = unlimited
+
 
 def chronological_split(
     index: pd.DatetimeIndex,
@@ -77,21 +89,32 @@ def build_tabular_frame(
     lags: list[int],
     rolling_windows: list[int],
     weekly_lags: list[int] | tuple[int, ...] = DEFAULT_WEEKLY_LAGS,
+    weather_path_stats: bool = False,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Build a direct t+H tabular task.
 
     Mode A uses target-time calendar features and observed target-time weather
-    as the original study's documented weather-forecast proxy. Mode B adds
-    origin-time load lags/rolling values. The proxy is a declared experimental
-    assumption, never a silent production claim.
+    as the original study's documented weather-forecast proxy; with
+    ``weather_path_stats`` it also summarises the weather path over
+    [t+1, t+H] (mean, min, max), the same window the sequence models see.
+    Mode B adds load lags 0..23 h and rolling means ending at t; mode B+ adds
+    the weekly lags. The proxy is a declared experimental assumption, never a
+    silent production claim.
     """
     target_time = hourly.index + pd.Timedelta(hours=horizon_hours)
-    future_weather = hourly[weather].shift(-horizon_hours).add_prefix("target_weather_")
+    ahead = hourly[weather].shift(-horizon_hours)
+    future_weather = ahead.add_prefix("target_weather_")
     calendar = _calendar_features(target_time)
     calendar.index = hourly.index
 
-    x = pd.concat([future_weather, calendar], axis=1)
+    blocks = [future_weather, calendar]
+    if weather_path_stats:
+        # value at t summarises weather over [t+1, t+H]
+        window = ahead.rolling(horizon_hours, min_periods=horizon_hours)
+        blocks += [window.mean().add_prefix("path_mean_"), window.min().add_prefix("path_min_"),
+                   window.max().add_prefix("path_max_")]
+    x = pd.concat(blocks, axis=1)
 
     if mode in HISTORY_MODES:
         for zone in targets:

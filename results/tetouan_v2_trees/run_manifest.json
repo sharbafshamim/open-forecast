@@ -77,18 +77,20 @@
     },
     "features": {
       "tree_lags": [
+        0,
         1,
         2,
         3,
         6,
         12,
-        24
+        23
       ],
       "rolling_windows": [
         3,
         24
       ],
       "target_weather_proxy": "observed_target_weather",
+      "weather_path_stats": true,
       "weekly_lags": [
         144,
         168
@@ -139,13 +141,13 @@
   },
   "provenance": {
     "git_revision": "unavailable (repository not initialized or committed)",
-    "source_tree_sha256": "1a25d70b01c11efa66643c62290b1e8bcb2c4671bd9539aaf13f38745fa5e729",
+    "source_tree_sha256": "daf8b160e8d81cdf6b20d33db8c6779b5259d1370ec2df20e9b4105a0b300744",
     "raw_data_sha256": "0184f2e6db6b49dfea007f35fe4f6bab7ec4ad6ed1337e747bb1b439ad6cb764",
-    "python": "3.14.7 | packaged by Anaconda, Inc. | (main, Aug 14 2026, 10:13:42) [Clang 20.1.8 ]",
-    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+    "platform": "Linux-6.18.44-fc-v310-x86_64-with-glibc2.39",
     "numpy": "2.5.3",
-    "pandas": "3.0.6",
+    "pandas": "3.0.5",
     "scikit_learn": "1.9.1",
-    "torch": "2.14.0"
+    "torch": "2.15.0+cu132"
   }
 }

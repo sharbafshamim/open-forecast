@@ -1,0 +1,12 @@
+versus,p_iid,p_newey_west,p_other_better_newey_west,p_holm_newey_west
+chronos2|price_exogenous,0.89033,0.882452,0.117548,0.882452
+chronos2|price_only,0.0,0.0,1.0,0.0
+chronos_bolt_base|price_only,0.0,0.0,1.0,0.0
+chronos_bolt_small|price_only,0.0,0.0,1.0,0.0
+extra_trees|price_exogenous,0.0,0.000308,0.999692,0.000924
+extra_trees|price_only,0.0,0.0,1.0,0.0
+hist_gradient_boosting|price_exogenous,0.0,0.000735,0.999265,0.001469
+hist_gradient_boosting|price_only,0.0,1e-06,0.999999,2e-06
+lear|price_exogenous,0.0,0.0,1.0,1e-06
+lear|price_only,0.0,0.0,1.0,0.0
+naive|price_only,0.0,0.0,1.0,0.0

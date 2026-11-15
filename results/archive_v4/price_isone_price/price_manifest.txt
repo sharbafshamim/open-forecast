@@ -1,0 +1,8 @@
+dataset: {'format': 'isone_price', 'paths': ['data/raw/isone/2023_smd_hourly.xlsx', 'data/raw/isone/2024_smd_hourly.xlsx', 'data/raw/isone/2025_smd_hourly.xlsx']}
+test: {'start': '2025-01-01', 'end': '2025-12-31'}
+calibration_days: None
+recalibration_days: {'lear': 7, 'default': 28}
+seed: 42
+models: {'hgb': {'max_iter': 300, 'learning_rate': 0.05, 'max_leaf_nodes': 31}, 'et': {'n_estimators': 300, 'min_samples_leaf': 5, 'max_features': 0.33}}
+exogenous: {'Dry_Bulb': 'observed day-D temperature (declared weather-forecast proxy)', 'Dew_Point': 'observed day-D dew point (declared weather-forecast proxy)', 'RT_Demand': 'observed load, D-1 and D-7 only', 'dst_policy': '24 h local market day; 2 spring hours interpolated, 02X averaged'}
+common test days: 365

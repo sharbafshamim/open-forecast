@@ -18,17 +18,19 @@ split:
   train_fraction: 0.7
   validation_fraction: 0.15
 features:
-  tree_lags:
+  tree_lags:            # load lags 0..23 h: inside the 24-h window of set B
+  - 0
   - 1
   - 2
   - 3
   - 6
   - 12
-  - 24
+  - 23
   rolling_windows:
   - 3
   - 24
   target_weather_proxy: observed_target_weather
+  weather_path_stats: true    # mean/min/max of weather over [t+1, t+H], as the sequence models see
   weekly_lags:
   - 144
   - 168

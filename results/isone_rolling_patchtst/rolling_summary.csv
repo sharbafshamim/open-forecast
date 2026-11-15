@@ -1,0 +1,2 @@
+model,feature_mode,folds,mean_rmse,median_rmse,mean_rank,wins
+patchtst,weather_time_history_weekly,13,102.38655372623559,96.78576030820598,1.0,13

@@ -1,0 +1,13 @@
+forecast,days,mae,rmse,rmae
+chronos2|price_exogenous,365,10.2791,18.5487,0.518
+ensemble: Chronos-2 + LEAR (equal weights),365,10.5351,19.5785,0.5309
+chronos2|price_only,365,12.3983,22.6293,0.6248
+lear|price_exogenous,365,12.4478,23.176,0.6273
+hist_gradient_boosting|price_exogenous,365,12.5124,22.3173,0.6305
+extra_trees|price_exogenous,365,12.8852,24.1743,0.6493
+chronos_bolt_small|price_only,365,13.1007,23.6959,0.6602
+lear|price_only,365,13.1581,24.0499,0.6631
+chronos_bolt_base|price_only,365,13.1984,24.132,0.6651
+extra_trees|price_only,365,13.8734,25.6734,0.6991
+hist_gradient_boosting|price_only,365,14.3779,25.776,0.7245
+naive|price_only,365,19.8444,34.4608,1.0

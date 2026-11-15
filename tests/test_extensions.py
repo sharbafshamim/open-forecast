@@ -73,3 +73,30 @@ def test_weekly_sequences_drop_incomplete_training_samples():
     # origins start at hour 169; those before hour 191 have a 24-h lookback
     # that starts before hour 168 (the first full weekly lag): 22 are dropped
     assert len(parts["train"].index) == len(split.train) - 22
+
+
+def test_isone_price_inputs_respect_the_bidding_gate():
+    """No observed load after hour-ending 09:00 of D-1 may enter a day-D forecast."""
+    from open_forecast.price import GATE_HOURS, PriceData, build_design
+
+    index = pd.date_range("2024-01-01", periods=24 * 40, freq="h")
+    rng = np.random.default_rng(1)
+    hourly = pd.DataFrame({"Price": 50 + rng.normal(size=len(index)),
+                           "RT_Demand": 1000 + rng.normal(size=len(index)),
+                           "Dry_Bulb": rng.normal(size=len(index))}, index=index)
+    data = PriceData(hourly, {"Dry_Bulb": (0,), "RT_Demand": (2, 7)}, {},
+                     partial_d1_hours={"RT_Demand": GATE_HOURS},
+                     past_delay_hours={"RT_Demand": 24 - GATE_HOURS})
+    x0, _ = build_design(data, "price_exogenous")
+    day = x0.index[20]
+    # change observed load from the gate onwards (D-1 09:00 .. end of D): features must not move
+    changed = hourly.copy()
+    after_gate = (changed.index >= day - pd.Timedelta(hours=24 - GATE_HOURS)) & (changed.index < day + pd.Timedelta(days=1))
+    changed.loc[after_gate, "RT_Demand"] += 1e4
+    x1, _ = build_design(PriceData(changed, data.exogenous_lags, {}, data.partial_d1_hours,
+                                   data.past_delay_hours), "price_exogenous")
+    assert np.allclose(x0.loc[day].to_numpy(float), x1.loc[day].to_numpy(float))
+    # the delayed past covariate seen by a foundation model ends at D-1 hour-ending 09:00
+    delayed = hourly["RT_Demand"].shift(24 - GATE_HOURS)
+    last = delayed.loc[: day - pd.Timedelta(hours=1)].iloc[-1]
+    assert last == hourly["RT_Demand"].loc[day - pd.Timedelta(days=1) + pd.Timedelta(hours=GATE_HOURS - 1)]

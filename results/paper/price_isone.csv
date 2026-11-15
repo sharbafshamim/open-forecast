@@ -1,0 +1,12 @@
+model,information_set,test_days,mae,rmse,smape_pct,rmae,seconds,peak_mae,spike_mae
+naive,-,365,19.844,34.461,26.401,1.0,0.0,22.774,62.988
+lear,price_only,365,13.158,24.05,17.78,0.663,0.0,15.721,60.888
+hist_gradient_boosting,price_only,365,14.378,25.776,19.228,0.725,0.0,16.962,67.572
+extra_trees,price_only,365,13.873,25.673,18.655,0.699,0.0,16.502,68.128
+chronos_bolt_small,price_only,365,13.101,23.696,17.906,0.66,0.0,15.659,45.037
+chronos_bolt_base,price_only,365,13.198,24.132,17.863,0.665,0.0,15.869,46.051
+chronos2,price_only,365,12.398,22.629,16.994,0.625,0.0,14.824,45.185
+lear,price_exogenous,365,12.448,23.176,16.8,0.627,0.0,14.886,57.555
+hist_gradient_boosting,price_exogenous,365,12.512,22.317,16.862,0.631,20122.8,14.537,55.688
+extra_trees,price_exogenous,365,12.885,24.174,17.316,0.649,0.0,15.182,67.055
+chronos2,price_exogenous,365,10.279,18.549,14.411,0.518,0.0,11.914,36.911

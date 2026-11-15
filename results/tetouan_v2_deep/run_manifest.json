@@ -1,0 +1,153 @@
+{
+  "framework": "open-forecast-framework",
+  "models": [
+    "persistence",
+    "seasonal_naive",
+    "lstm",
+    "cross_attention_transformer",
+    "patchtst"
+  ],
+  "feature_modes": [
+    "weather_time",
+    "weather_time_history",
+    "weather_time_history_weekly"
+  ],
+  "datetime_audit": {
+    "formats_used": {
+      "month-day-year (hyphen)": 0,
+      "month/day/year (slash)": 52416
+    },
+    "first_timestamp": "2017-01-01 00:00:00",
+    "last_timestamp": "2017-12-30 23:50:00",
+    "source_interval": "0 days 00:10:00",
+    "source_rows_per_hour": 6,
+    "hourly_rows": 8736,
+    "renamed_columns": {
+      "Zone 1 Power Consumption": "Zone 1",
+      "Zone 2  Power Consumption": "Zone 2",
+      "Zone 3  Power Consumption": "Zone 3"
+    }
+  },
+  "split": {
+    "horizon_hours": 24,
+    "purge_embargo_hours": 24,
+    "train_forecast_origins": 5980,
+    "validation_forecast_origins": 1257,
+    "test_forecast_origins": 1259,
+    "validation_embargoed_origins": 24,
+    "test_embargoed_origins": 24,
+    "train_forecast_origin_end": "2017-09-14 03:00:00",
+    "validation_forecast_origin_start": "2017-09-15 04:00:00",
+    "validation_forecast_origin_end": "2017-11-06 12:00:00",
+    "test_forecast_origin_start": "2017-11-07 13:00:00",
+    "test_forecast_origin_end": "2017-12-29 23:00:00",
+    "train_target_end": "2017-09-15 03:00:00",
+    "validation_target_end": "2017-11-07 12:00:00",
+    "test_target_end": "2017-12-30 23:00:00"
+  },
+  "feature_availability": {
+    "weather_time": "target-time weather proxy + known calendar",
+    "weather_time_history": "weather_time + historical consumption",
+    "weather_time_history_weekly": "weather_time_history + target-aligned weekly lags"
+  },
+  "config": {
+    "dataset": {
+      "datetime_column": "DateTime",
+      "path": "data/raw/power_consumption.csv",
+      "target_columns": [
+        "Zone 1",
+        "Zone 2"
+      ],
+      "unit": "dataset units",
+      "weather_columns": [
+        "Temperature",
+        "Humidity",
+        "Wind Speed",
+        "general diffuse flows",
+        "diffuse flows"
+      ]
+    },
+    "features": {
+      "rolling_windows": [
+        3,
+        24
+      ],
+      "target_weather_proxy": "observed_target_weather",
+      "tree_lags": [
+        0,
+        1,
+        2,
+        3,
+        6,
+        12,
+        23
+      ],
+      "weather_path_stats": true,
+      "weekly_lags": [
+        144,
+        168
+      ]
+    },
+    "forecast": {
+      "horizon_hours": 24,
+      "lookback_hours": 24
+    },
+    "models": {
+      "cross_attention_transformer": {
+        "d_model": 64,
+        "dropout": 0.1,
+        "nhead": 4,
+        "num_layers": 2
+      },
+      "extra_trees": {
+        "max_depth": 20,
+        "n_estimators": 200
+      },
+      "hist_gradient_boosting": {
+        "learning_rate": 0.05,
+        "max_depth": 10,
+        "max_iter": 200
+      },
+      "lstm": {
+        "dropout": 0.1,
+        "hidden_size": 128,
+        "num_layers": 2
+      },
+      "patchtst": {
+        "d_model": 64,
+        "dropout": 0.1,
+        "nhead": 4,
+        "num_layers": 2,
+        "patch_length": 4,
+        "stride": 2
+      },
+      "random_forest": {
+        "max_depth": 20,
+        "n_estimators": 200
+      }
+    },
+    "split": {
+      "train_fraction": 0.7,
+      "validation_fraction": 0.15
+    },
+    "training": {
+      "batch_size": 64,
+      "early_stopping_patience": 10,
+      "epochs": 60,
+      "learning_rate": 0.001,
+      "seed": 42,
+      "weight_decay": 0.0001
+    }
+  },
+  "provenance": {
+    "git_revision": "f529baf637d9559e2348cff60a2efa612afa76c5 (dirty working tree; verify source_tree_sha256)",
+    "source_tree_sha256": "48c85c7ef14be73c18d73dd93e4b1bb940572459037ca5e874733da7daa246b5",
+    "raw_data_sha256": "0184f2e6db6b49dfea007f35fe4f6bab7ec4ad6ed1337e747bb1b439ad6cb764",
+    "python": "3.14.7 | packaged by Anaconda, Inc. | (main, Aug 14 2026, 10:13:42) [Clang 20.1.8 ]",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit_learn": "1.9.1",
+    "torch": "2.14.0"
+  }
+}
